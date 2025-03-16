@@ -1,0 +1,96 @@
+.slider {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  .slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .slide {
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .slide > div {
+    height: 300px;
+    position: relative;
+  }
+
+  .slide > div > span {
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: fit-content;
+    width: fit-content;
+  }
+  
+  .prev,
+  .next {
+    position: absolute;
+    top: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .prev {
+    left: 10px;
+  }
+
+  .prev:after, .next:after, .prev:before, .next:before {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: 10px;
+    background: #fff;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+  }
+
+  .prev:after, .next:after {
+    transform: rotate(45deg);
+    bottom: -7px;
+  }
+
+  .prev:before, .next:before {
+    top: -7px;
+    transform: rotate(-45deg);
+  }
+  
+  .next {
+    right: 10px;
+    transform: rotate(180deg);
+  }
+  
+  .dots {
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #bbb;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .dot.active {
+    background: #333;
+  }

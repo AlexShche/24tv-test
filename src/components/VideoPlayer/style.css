@@ -1,0 +1,45 @@
+.video-player-wrapper {
+  max-width: 600px;
+  margin: 100px auto 60px;
+}
+
+.video-player {
+    position: relative;
+  }
+  
+  video {
+    width: 100%;
+    display: block;
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 5px;
+    display: flex;
+  }
+  
+  .seek-bar {
+    flex-grow: 1;
+    margin: 0 10px;
+  }
+  
+  .controls span {
+    color: white;
+    font-size: 14px;
+    margin: 0 5px;
+  }
