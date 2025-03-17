@@ -12,7 +12,7 @@ const App: FC = () => {
       <Slider slides={slides} />
       <VideoPlayer src={srcVideo} poster={posterVideo} />
     </div>
-  )
+  );
 };
 
 export default App;

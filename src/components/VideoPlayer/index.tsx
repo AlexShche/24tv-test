@@ -1,13 +1,15 @@
-import { useRef, useState, FC, ChangeEvent, useEffect } from "react";
-import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
-import { IoIosPlay, IoIosPause } from "react-icons/io";
-import { IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
+import { useRef, useState, FC, ChangeEvent, useEffect } from 'react';
+import { AiOutlineFullscreen, AiOutlineFullscreenExit } from 'react-icons/ai';
+import { IoIosPlay, IoIosPause } from 'react-icons/io';
+import { IoVolumeMute, IoVolumeHigh } from 'react-icons/io5';
 
 import { VideoPlayerProps } from './types';
-import "./style.css";
+import './style.css';
 
 export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const rangeRef = useRef<HTMLInputElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -16,9 +18,10 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
 
   useEffect(() => {
     const video = videoRef.current;
-  
+    const player = playerRef.current;
+
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement === video);
+      setIsFullscreen(document.fullscreenElement === player);
     };
 
     const handleMuteChange = () => {
@@ -32,22 +35,20 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
         setIsPlaying(!video.paused);
       }
     };
-  
-    //в useEffect вышаем слушатели на play/pause, fullscreen, volumechange
-    if (video) {
-      video.addEventListener("fullscreenchange", handleFullscreenChange);
-      video.addEventListener("volumechange", handleMuteChange);
-      video.addEventListener("play", handlePlayPause);
-      video.addEventListener("pause", handlePlayPause);
+
+    if (video && player) {
+      player.addEventListener('fullscreenchange', handleFullscreenChange);
+      video.addEventListener('volumechange', handleMuteChange);
+      video.addEventListener('play', handlePlayPause);
+      video.addEventListener('pause', handlePlayPause);
     }
-  
-    // так же не забываем отписываться
+
     return () => {
-      if (video) {
-        video.removeEventListener("fullscreenchange", handleFullscreenChange);
-        video.removeEventListener("volumechange", handleMuteChange);
-        video.removeEventListener("play", handlePlayPause);
-        video.removeEventListener("pause", handlePlayPause);
+      if (video && player) {
+        player.removeEventListener('fullscreenchange', handleFullscreenChange);
+        video.removeEventListener('volumechange', handleMuteChange);
+        video.removeEventListener('play', handlePlayPause);
+        video.removeEventListener('pause', handlePlayPause);
       }
     };
   }, []);
@@ -64,24 +65,37 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
 
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !videoRef?.current?.muted;
+      videoRef.current.muted = !videoRef.current.muted;
       setIsMuted(videoRef.current.muted);
     }
   };
 
   const toggleFullscreen = () => {
-    if (!isFullscreen && videoRef.current) videoRef.current.requestFullscreen();
-    else document?.exitFullscreen();
+    const player = playerRef.current;
+    if (player) {
+      if (!isFullscreen) {
+        player.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
   };
 
   const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+    if (videoRef.current && rangeRef.current) {
+      const video = videoRef.current;
+      const range = rangeRef.current;
+
+      if (range) {
+        const progress = (video.currentTime / video.duration) * 100;
+        range.style.background = `linear-gradient(to right, #007bff ${progress}%, #555 ${progress}% 100%)`;
+      }
+
+      setCurrentTime(video.currentTime);
     }
   };
 
   const handleLoadedMetadata = () => {
-    // при загрузке метаданных задаем длительность
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
     }
@@ -98,13 +112,13 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   return (
-    <div className="video-player-wrapper">
+    <div className='video-player-wrapper'>
       <h2>Video player</h2>
-      <div className="video-player">
+      <div className='video-player' ref={playerRef}>
         <video
           ref={videoRef}
           src={src}
@@ -113,17 +127,19 @@ export const VideoPlayer: FC<VideoPlayerProps> = ({ src, poster }) => {
           onClick={togglePlayPause}
           poster={poster}
         />
-        <div className="controls">
+        <div className='controls'>
           <button onClick={togglePlayPause}>
             {isPlaying ? <IoIosPause /> : <IoIosPlay />}
           </button>
           <input
-            type="range"
-            min="0"
+            ref={rangeRef}
+            type='range'
+            min='0'
             max={duration}
             value={currentTime}
             onChange={handleSeek}
-            className="seek-bar"
+            className='seek-bar'
+            step={0.1}
           />
           <span>
             {formatTime(currentTime)} / {formatTime(duration)}
